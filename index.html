@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caisse enregistreuse</title>
+</head>
+<body>
+  <select name="fruits" id="select-fruits"></select>
+
+  <p>Total : <span id="res"></span></p>
+
+  <button id="scan">Scanner l'article</button>
+  
+
+  <script>
+
+    function status() {
+      fetch('http://localhost:7373/')
+        .then(response => response.json())
+        .then(data => {
+          let res = document.getElementById("res");
+          let select = 
+            document.getElementById("select-fruits");
+
+          data.list.forEach(element => {
+            select.innerHTML += 
+              "<option value='"+element.name+"'>"+element.name+"</option>";
+          });
+
+
+          res.innerText = data.total;
+        });
+    }
+
+
+    let btn = document.getElementById("scan");
+
+    btn.addEventListener("click", function() {
+      let fruits = document.getElementById("select-fruits").value;
+
+      fetch('http://localhost:7373/add', {
+        mode: "no-cors",
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({fruits: fruits})
+      })
+      .then(_ => {
+        status();
+      });
+    });
+
+    status();
+  </script>
+</body>
+</html>
+
